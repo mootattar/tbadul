@@ -33,10 +33,13 @@ export default function CreatePost() {
     );
     setUploading(true);
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_CLOUDINARY_URL ?? "", {
-        method: "POST",
-        body: data,
-      });
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_URL}/image/upload`,
+        {
+          method: "POST",
+          body: data,
+        }
+      );
       if (!res.ok) {
         throw new Error("فشل رفع الصورة");
       }
