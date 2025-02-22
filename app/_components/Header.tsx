@@ -70,7 +70,7 @@ export default function Header() {
       href: "/about",
     },
   ];
-  if (!currentUser || currentUser.anonymous) {
+  if (!currentUser || currentUser?.isAnonymous) {
     buttons.push({
       label: "نشر كمجهول",
       href: "/anonymous",

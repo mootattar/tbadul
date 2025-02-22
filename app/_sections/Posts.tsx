@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext, useState, useEffect } from "react";
 import Card from "../_components/Card";
-import { PostContext } from "../contexts/PostContext";
+import { Post, PostContext } from "../contexts/PostContext";
 
 export default function Posts() {
   const { posts, refreshPosts } = useContext(PostContext);
@@ -48,7 +48,7 @@ export default function Posts() {
   let filteredPosts = posts;
   if (selectedCategory !== "الكل") {
     const filterChoice = categoryMapping[selectedCategory];
-    filteredPosts = posts.filter((post: any) => post.choice === filterChoice);
+    filteredPosts = posts.filter((post: Post) => post.choice === filterChoice);
   }
 
   return (
@@ -70,8 +70,8 @@ export default function Posts() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredPosts?.length ? (
-          filteredPosts.map((post: any) => (
-            <Card key={post.id} href={post.id} post={post} />
+          filteredPosts.map((post: Post) => (
+            <Card key={post.id} href={post?.id || ""} post={post} />
           ))
         ) : (
           <p className="col-span-full text-center text-lg text-gray-500">

@@ -3,16 +3,13 @@ import { User } from "lucide-react";
 import Image from "next/image";
 import React, { useContext } from "react";
 import avatar from "../assets/avatar.png";
-import { PostContext } from "../contexts/PostContext";
+import { Post, PostContext } from "../contexts/PostContext";
 import noImage from "../assets/noImage.jpg";
 import Link from "next/link";
-import { useAuth } from "../contexts/AuthContexts";
 
 export default function PostDetails({ id }: { id: string }) {
   const { posts } = useContext(PostContext);
-  const { currentUser } = useAuth();
-  const post = posts?.find((p: { id: string }) => p.id === id);
-
+  const post = posts?.find((p: Post) => p.id === id);
   if (!post) {
     return <h1>post is not exist</h1>;
   }
@@ -93,9 +90,6 @@ export default function PostDetails({ id }: { id: string }) {
             <div className="flex flex-col">
               <p className="font-semibold text-gray-700">
                 {post?.auth || "مجهول"}
-              </p>
-              <p className="text-gray-500 text-sm">
-                {post.createdAt.toDate().toLocaleString()}
               </p>
             </div>
             <User className="text-gray-400 ml-auto" />

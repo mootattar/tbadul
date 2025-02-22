@@ -26,7 +26,6 @@ export default function Signup() {
     image: "",
   });
   const [errors, setErrors] = useState<Errors>({});
-  const [uploading, setUploading] = useState<boolean>(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -77,7 +76,6 @@ export default function Signup() {
       "upload_preset",
       process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD ?? ""
     );
-    setUploading(true);
     try {
       const res = await fetch(process.env.NEXT_PUBLIC_CLOUDINARY_URL ?? "", {
         method: "POST",
@@ -91,13 +89,12 @@ export default function Signup() {
     } catch (error) {
       console.error("حدث خطأ أثناء رفع الصورة:", error);
     } finally {
-      setUploading(false);
     }
   };
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    nextRef: React.RefObject<HTMLInputElement>
+    nextRef: React.RefObject<HTMLInputElement | null>
   ) => {
     if (e.key === "Enter") {
       e.preventDefault();

@@ -72,7 +72,6 @@ export const login = async (email: string, password: string) => {
       email,
       password
     );
-    userCredential.user;
     return userCredential.user;
   } catch (error) {
     console.error("خطأ في تسجيل الدخول:", error);

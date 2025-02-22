@@ -20,11 +20,9 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    ("hello world");
     const fomrData = handleSendData(data);
     if (fomrData.error) {
       setErrors(fomrData.error);
-      ("errooorrr");
       if (fomrData.error.password) passwordRef.current?.focus();
       if (fomrData.error.email) emailRef.current?.focus();
     } else {
@@ -40,7 +38,7 @@ export default function Login() {
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    nextRef: React.RefObject<HTMLInputElement>
+    nextRef: React.RefObject<HTMLInputElement | null>
   ) => {
     if (e.key === "Enter") {
       e.preventDefault();

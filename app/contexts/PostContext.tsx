@@ -9,12 +9,32 @@ import {
   useContext,
 } from "react";
 
-export const PostContext = createContext({});
-
-// Provider يقوم بجلب البيانات عند التحميل ويُمرر الدالة refreshPosts
-export default function PostProvider({ children }) {
-  const [posts, setPosts] = useState([]);
-
+export interface Post {
+  id?: string;
+  title?: string;
+  body?: string;
+  image?: string;
+  secondImage?: string;
+  phone?: string;
+  uid?: string;
+  choice?: string;
+  auth?: string;
+  createdAt?: Date;
+}
+interface PostContextType {
+  posts: Post[];
+  refreshPosts: () => void;
+}
+export const PostContext = createContext<PostContextType>({
+  posts: [],
+  refreshPosts: () => {},
+});
+export default function PostProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [posts, setPosts] = useState<Post[]>([]);
   // دالة لجلب المنشورات من Firestore
   const fetchPosts = useCallback(async () => {
     try {

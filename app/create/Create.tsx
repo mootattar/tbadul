@@ -12,9 +12,6 @@ export default function CreatePost() {
     "donation"
   );
   const { currentUser } = useAuth();
-  if (currentUser) {
-    currentUser;
-  }
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [image, setImage] = useState("");
@@ -46,10 +43,8 @@ export default function CreatePost() {
       const uploadedImage = await res.json();
       if (second) {
         setSecondImage(uploadedImage.secure_url);
-        "تم رفع الصورة الثانية:", uploadedImage.secure_url;
       } else {
         setImage(uploadedImage.secure_url);
-        ("تم رفع الصورة الأولى");
       }
     } catch (error) {
       console.error("حدث خطأ أثناء رفع الصورة:", error);
@@ -74,9 +69,9 @@ export default function CreatePost() {
       secondImage: secondImage || null,
       title,
       body,
-      uid: currentUser.uid,
+      uid: currentUser?.uid,
       choice,
-      auth: currentUser.isAnonymous ? "مجهول" : currentUser.displayName,
+      auth: currentUser?.isAnonymous ? "مجهول" : currentUser?.displayName,
       createdAt: new Date(),
     };
     try {

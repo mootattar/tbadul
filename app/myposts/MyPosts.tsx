@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -22,9 +23,8 @@ export default function MyPosts() {
 
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<any>(null); // المنشور المحدد للتعديل أو الحذف
+  const [selectedPost, setSelectedPost] = useState<any>(null);
 
-  // دالة فتح حوار التعديل مع تمرير البيانات
   const openEditDialog = (post: any) => {
     setSelectedPost(post);
     setShowEditDialog(true);
@@ -47,7 +47,6 @@ export default function MyPosts() {
         title: newTitle,
         description: newDescription, // تعديل الوصف بدلاً من `body`
       });
-      ("تم تعديل المنشور");
 
       // تحديث البيانات في الواجهة بدون إعادة تحميل الصفحة
       setPosts((prevPosts) =>
@@ -70,7 +69,6 @@ export default function MyPosts() {
     if (!selectedPost) return;
     try {
       await deleteDoc(doc(db, "posts", selectedPost.id));
-      ("تم حذف المنشور");
 
       // تحديث الحالة لإزالة المنشور المحذوف
       setPosts((prevPosts) =>
@@ -108,6 +106,7 @@ export default function MyPosts() {
 
   useEffect(() => {
     fetchPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
   return (
@@ -169,7 +168,8 @@ export default function MyPosts() {
       {/* حوار تعديل المنشور */}
       {showEditDialog && selectedPost && (
         <EditDialog
-          post={selectedPost}
+          initialTitle={selectedPost.title}
+          initialDescription={selectedPost.description}
           onConfirm={handleEditConfirm}
           onCancel={() => setShowEditDialog(false)}
         />
@@ -178,7 +178,7 @@ export default function MyPosts() {
       {/* حوار تأكيد الحذف */}
       {showDeleteDialog && selectedPost && (
         <ConfirmDeleteDialog
-          post={selectedPost}
+          message="هل أنت متأكد من حذف المنشور؟"
           onConfirm={handleDeleteConfirm}
           onCancel={() => setShowDeleteDialog(false)}
         />

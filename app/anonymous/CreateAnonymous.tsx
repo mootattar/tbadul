@@ -43,10 +43,8 @@ export default function CreateAnonymous() {
       const uploadedImage = await res.json();
       if (second) {
         setSecondImage(uploadedImage.secure_url);
-        "تم رفع الصورة الثانية:", uploadedImage.secure_url;
       } else {
         setImage(uploadedImage.secure_url);
-        ("تم رفع الصورة الأولى");
       }
     } catch (error) {
       console.error("حدث خطأ أثناء رفع الصورة:", error);
@@ -72,10 +70,6 @@ export default function CreateAnonymous() {
       return;
     }
     const user = await loginAnonymously();
-    if (user) {
-      "المستخدم:", user.uid;
-    }
-    // تكوين كائن المنشور مع البيانات المطلوبة
     const post = {
       image: image || null,
       secondImage: secondImage || null,

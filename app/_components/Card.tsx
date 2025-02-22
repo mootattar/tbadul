@@ -4,11 +4,24 @@ import React, { useState } from "react";
 import Link from "next/link";
 import noImage from "../assets/noImage.jpg";
 import { useAuth } from "../contexts/AuthContexts";
-import { doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { doc, deleteDoc, updateDoc, collection } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { EditDialog, ConfirmDeleteDialog } from "./Dialog";
 
-export default function Card(props: { href: any; post: any }) {
+interface Post {
+  id?: string;
+  title?: string;
+  body?: string;
+  image?: string;
+  secondImage?: string;
+  phone?: string;
+  uid?: string;
+  choice?: string;
+  auth?: string;
+  createdAt?: Date;
+}
+
+export default function Card(props: { href: string; post: Post }) {
   const { href, post } = props;
   const { currentUser } = useAuth();
 
@@ -20,11 +33,10 @@ export default function Card(props: { href: any; post: any }) {
     newDescription: string
   ) => {
     try {
-      await updateDoc(doc(db, "posts", post.id), {
+      await updateDoc(doc(collection(db, "posts"), post.id), {
         title: newTitle,
         body: newDescription,
       });
-      ("تم تعديل المنشور");
     } catch (error) {
       console.error("خطأ في تعديل المنشور:", error);
     } finally {
@@ -37,9 +49,12 @@ export default function Card(props: { href: any; post: any }) {
   };
 
   const handleDeleteConfirm = async () => {
+    if (!post.id) {
+      console.error("Post ID is undefined");
+      return;
+    }
     try {
       await deleteDoc(doc(db, "posts", post.id));
-      ("تم حذف المنشور");
     } catch (error) {
       console.error("خطأ في حذف المنشور:", error);
     } finally {
@@ -56,7 +71,7 @@ export default function Card(props: { href: any; post: any }) {
       {post?.image ? (
         <Image
           src={post.image}
-          alt={post.title}
+          alt={post.title || "Image"}
           loading="lazy"
           width={500}
           height={500}
@@ -64,7 +79,7 @@ export default function Card(props: { href: any; post: any }) {
       ) : (
         <Image
           src={noImage}
-          alt={post.title}
+          alt={post.title || "Image"}
           width={500}
           height={200}
           loading="lazy"
