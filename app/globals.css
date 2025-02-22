@@ -79,13 +79,6 @@ body {
   }
 }
 
-.hero {
-  background-image: url("./assets/hero.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
 .navlink {
   position: relative;
 }
