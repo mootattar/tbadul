@@ -1,4 +1,4 @@
-import { Facebook, Instagram } from "lucide-react";
+import { Facebook } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -26,11 +26,12 @@ export default function Footer() {
             تواصل معنا عبر وسائل التواصل الاجتماعي
           </p>
           <div className="flex justify-center md:justify-end space-x-3 mt-2">
-            <Link href="#" className="text-[#1877F2]">
+            <Link
+              href="https://www.facebook.com/profile.php?id=100076633877305"
+              target="_blank"
+              className="text-[hsl(214,89%,62%)]"
+            >
               <Facebook />
-            </Link>
-            <Link href="#" className="text-[#E1306C]">
-              <Instagram />
             </Link>
             <Link href={`https://wa.me/+962776242523`} target="_blank">
               <svg

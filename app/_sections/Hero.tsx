@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import React from "react";
 
 export default function Hero() {
@@ -10,20 +11,18 @@ export default function Hero() {
           مرحبا بك في <span className="text-blue-300 ">تبادُل</span>
         </p>
         <p className="sm:text-3xl text-xl text-white/70 mt-12">
-          <span className="text-red-300">!</span>يمكنك تبادل الكتب أو التبرع بها
+          يمكنك تبادل الكتب أو التبرع بها
+          <span className="text-red-300">!</span>
           أو الإبلاغ عن المفقودات
         </p>
         <p className="sm:text-lg text-white/60 mt-6">
           موقع طلابي يسهّل عليك إيجاد ما تحتاجه أو مشاركة ما لا تحتاجه
         </p>
-        <a href="#content">
-          {/* <Button className="mt-12 text-xl bg-[hsl(195,6%,13%)] hover:bg-[hsl(0,0%,17%)]">
-            تصفح المنشورات{" "}
-          </Button> */}
+        <Link href="#content">
           <Button className="mt-12 text-xl text-white font-bold bg-blue-700 hover:bg-blue-800">
-            تصفح المنشورات{" "}
+            تصفح المنشورات
           </Button>
-        </a>
+        </Link>
       </div>
 
       {/* القائمة في أسفل اليمين */}

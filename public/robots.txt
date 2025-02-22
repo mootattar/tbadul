@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://tbadul.vercel.app/
+
+# Sitemaps
+Sitemap: https://tbadul.vercel.app/sitemap.xml
