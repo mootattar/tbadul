@@ -3,7 +3,7 @@ import React from "react";
 
 export default function Hero() {
   return (
-    <section className="relative bg-black/60 h-[90vh] flex items-center justify-center text-center p-6">
+    <section className="relative bg-black/90 h-[90vh] flex items-center justify-center text-center p-6">
       {/* النص في الأعلى */}
       <div className="absolute top-14 font-bold text-white/80">
         <p className="sm:text-4xl text-2xl">
