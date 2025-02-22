@@ -1,6 +1,8 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
+import tailwindcssAnimate from "tailwindcss-animate";
 
-export default {
+const config: Config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -59,9 +61,11 @@ export default {
     },
   },
   plugins: [
-    require("tailwindcss-animate"),
-    function ({ addVariant }) {
+    tailwindcssAnimate,
+    plugin(({ addVariant }) => {
       addVariant("peer-not-placeholder-shown", "&:not(:placeholder-shown)");
-    },
+    }),
   ],
-} satisfies Config;
+};
+
+export default config;
