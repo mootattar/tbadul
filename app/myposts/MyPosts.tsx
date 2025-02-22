@@ -2,8 +2,8 @@
 "use client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import space from "../assets/space.png";
 import { useAuth } from "../contexts/AuthContexts";
+import noImage from "../assets/noImage.jpg";
 import { db } from "@/lib/firebase";
 import {
   collection,
@@ -135,7 +135,7 @@ export default function MyPosts() {
               className="bg-white shadow rounded-lg overflow-hidden"
             >
               <Image
-                src={post.image || space} // استخدم صورة افتراضية إذا لم يكن هناك صورة
+                src={post.image || noImage}
                 alt={post.title}
                 width={500}
                 height={300}
