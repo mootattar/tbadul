@@ -4,6 +4,7 @@ import {
   SheetTrigger,
   SheetContent,
   SheetTitle,
+  SheetClose,
 } from "@/components/ui/sheet";
 import {
   NavigationMenu,
@@ -26,6 +27,7 @@ export default function Header() {
   const { currentUser } = useAuth();
   const [open, setOpen] = useState(false);
   const [userPhoto, setuserPhoto] = useState("");
+  const [currentButton, setCurrentButton] = useState("home");
   const router = useRouter();
   const menuRef = useRef<HTMLImageElement>(null);
   useEffect(() => {
@@ -59,31 +61,36 @@ export default function Header() {
   const buttons = [
     {
       label: "الرئيسية",
+      value: "home",
       href: "/",
     },
     {
       label: "منشوراتي",
+      value: "myposts",
       href: "/myposts",
     },
     {
       label: "حولنا",
+      value: "about",
       href: "/about",
     },
   ];
   if (!currentUser || currentUser?.isAnonymous) {
     buttons.push({
       label: "نشر كمجهول",
+      value: "anonymous",
       href: "/anonymous",
     });
   } else {
     buttons.push({
       label: "إنشاء منشور",
+      value: "create",
       href: "/create",
     });
   }
   return (
-    <div dir="rtl" className="w-full px-4 lg:px-8 bg-[#202324]">
-      <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
+    <div dir="rtl" className="w-full px-4 lg:px-8 bg-[#202324] max-sm:px-0">
+      <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6 max-sm:px-1">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="lg:hidden">
@@ -93,34 +100,42 @@ export default function Header() {
           </SheetTrigger>
           <SheetContent side="right">
             <SheetTitle className="sr-only">التنقل</SheetTitle>
-            <Link href="#" prefetch={false}>
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 32 32"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10.5596 4.47998H24.0518L14.1324 19.1826H0.640137L10.5596 4.47998Z"
-                  fill="#212121"
-                />
-                <path
-                  d="M11.1502 21.1853L7.30811 26.88H21.4403L31.3598 12.1774H20.9294L14.8519 21.1853H11.1502Z"
-                  fill="#404040"
-                />
-              </svg>{" "}
-            </Link>
+            <SheetClose asChild>
+              <Link href="/" prefetch={false}>
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 32 32"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10.5596 4.47998H24.0518L14.1324 19.1826H0.640137L10.5596 4.47998Z"
+                    fill="#212121"
+                  />
+                  <path
+                    d="M11.1502 21.1853L7.30811 26.88H21.4403L31.3598 12.1774H20.9294L14.8519 21.1853H11.1502Z"
+                    fill="#404040"
+                  />
+                </svg>{" "}
+              </Link>
+            </SheetClose>
             <div className="grid gap-2 py-6">
               {buttons.map((button, index) => (
-                <Link
-                  key={index}
-                  href={button.href}
-                  className="flex w-full items-center py-2 text-lg font-semibold"
-                  prefetch={false}
-                >
-                  {button.label}
-                </Link>
+                <SheetClose asChild key={index}>
+                  <Link
+                    key={index}
+                    href={button.href}
+                    className={`flex w-full items-center py-2 text-lg ${
+                      button.value == "anonymous"
+                        ? "font-bold"
+                        : "font-semibold"
+                    }`}
+                    prefetch={false}
+                  >
+                    {button.label}
+                  </Link>
+                </SheetClose>
               ))}
             </div>
           </SheetContent>
@@ -147,18 +162,34 @@ export default function Header() {
           <NavigationMenuList className="space-x-0 gap-4" dir="rtl">
             {buttons.map((button) => (
               <NavigationMenuLink key={button.label} asChild>
-                <Link
-                  href={button.href}
-                  className="group navlink inline-flex h-9 w-max items-center focus:after:w-full justify-center rounded-md text-gray-400 bg-[#202324] text-sm font-semibold transition-colors hover:text-gray-50 focus:text-gray-50 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50"
-                  prefetch={false}
-                >
-                  {button.label}
-                </Link>
+                {button.value === "anonymous" ? (
+                  <Link
+                    href={button.href}
+                    className="inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent text-sm text-gray-400 px-2 font-bold border-2 border-gray-400 hover:text-white transition-all hover:border-gray-50"
+                    onClick={() => setCurrentButton(button.value)}
+                    prefetch={false}
+                  >
+                    {button.label}
+                  </Link>
+                ) : (
+                  <Link
+                    href={button.href}
+                    className={`navlink inline-flex h-9 w-max items-center justify-center rounded-md text-gray-400 bg-transparent text-sm font-semibold transition-colors hover:text-gray-50 ${
+                      currentButton === button.value
+                        ? "text-gray-50 after:w-full"
+                        : ""
+                    }`}
+                    onClick={() => setCurrentButton(button.value)}
+                    prefetch={false}
+                  >
+                    {button.label}
+                  </Link>
+                )}
               </NavigationMenuLink>
             ))}
           </NavigationMenuList>
         </NavigationMenu>
-        <div className="flex mr-auto relative items-center gap-2 cursor-pointer group transition-all ease-linear px-8 sm:px-0">
+        <div className="flex mr-auto relative items-center gap-2 cursor-pointer group transition-all ease-linear sm:px-8 px-0">
           {currentUser ? (
             !currentUser.isAnonymous ? (
               <>
@@ -196,34 +227,20 @@ export default function Header() {
             ) : (
               <div className="flex gap-2">
                 <Link href={"/login"} prefetch={false}>
-                  <Button
-                    variant="outline"
-                    className="text-white/90 bg-[#181a1b] hover:bg-transparent hover:text-white border border-[#2b2f31]"
-                  >
-                    تسجيل الدخول
-                  </Button>
+                  <Button variant="outline">تسجيل الدخول</Button>
                 </Link>
                 <Link href={"/signup"} prefetch={false}>
-                  <Button className="text-white bg-black hover:bg-black/50">
-                    إنشاء حساب
-                  </Button>
+                  <Button>إنشاء حساب</Button>
                 </Link>
               </div>
             )
           ) : (
             <div className="flex gap-2">
               <Link href={"/login"} prefetch={false}>
-                <Button
-                  variant="outline"
-                  className="text-white/90 bg-[#181a1b] hover:bg-transparent hover:text-white border border-[#2b2f31]"
-                >
-                  تسجيل الدخول
-                </Button>
+                <Button variant="outline">تسجيل الدخول</Button>
               </Link>
               <Link href={"/signup"} prefetch={false}>
-                <Button className="text-white bg-black hover:bg-black/50">
-                  إنشاء حساب
-                </Button>
+                <Button>إنشاء حساب</Button>
               </Link>
             </div>
           )}

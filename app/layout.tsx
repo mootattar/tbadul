@@ -4,6 +4,7 @@ import Header from "./_components/Header";
 import Footer from "./_components/Footer";
 import PostProvider from "./contexts/PostContext";
 import { AuthProvider } from "./contexts/AuthContexts";
+import { ToastProvider } from "./contexts/ToastContext";
 
 export const metadata: Metadata = {
   title: "tbadul",
@@ -21,9 +22,11 @@ export default function RootLayout({
       <body className={`antialiased`}>
         <AuthProvider>
           <PostProvider>
-            <Header />
-            {children}
-            <Footer />
+            <ToastProvider>
+              <Header />
+              {children}
+              <Footer />
+            </ToastProvider>
           </PostProvider>
         </AuthProvider>
       </body>

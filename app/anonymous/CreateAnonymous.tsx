@@ -2,20 +2,31 @@
 import { Button } from "@/components/ui/button";
 import { ImageUp } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { loginAnonymously } from "../functions/signIn";
 import { db } from "@/lib/firebase";
 import { addDoc, collection } from "firebase/firestore";
+import { useToast } from "../hooks/useToast";
 
 export default function CreateAnonymous() {
+  // refs
+  const titleRef = useRef<HTMLInputElement>(null);
+  const bodyRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  // states
   const [choice, setChoice] = useState<"exchange" | "lost" | "donation">(
     "donation"
   );
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [phone, setPhone] = useState("");
+  const [errors, setErrors] = useState({
+    title: "",
+    phone: "",
+  });
   const [image, setImage] = useState("");
   const [secondImage, setSecondImage] = useState("");
+  const { handleShow } = useToast();
   const [uploading, setUploading] = useState(false);
 
   const handleAddImage = async (
@@ -68,8 +79,21 @@ export default function CreateAnonymous() {
     e.preventDefault();
     // التحقق من رقم الهاتف: يجب أن يحتوي على 10 أرقام على الأقل
     const digitsOnly = phone.replace(/\D/g, "");
-    if (digitsOnly.length < 10) {
-      alert("رقم الهاتف يجب أن يحتوي على 10 أرقام على الأقل");
+    let errors = {};
+    if (title.trim() === "") {
+      errors = {
+        ...errors,
+        title: "يرجى كتابة عنوان المنشور",
+      };
+    }
+    if (digitsOnly.length !== 10) {
+      errors = {
+        ...errors,
+        phone: "يجب ان يكون رقم الهاتف مكون من 10 ارقام",
+      };
+    }
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
       return;
     }
     const user = await loginAnonymously();
@@ -92,12 +116,36 @@ export default function CreateAnonymous() {
       setSecondImage("");
       setChoice("donation");
       setPhone("");
+      handleShow("تم انشاء المنشور بنجاح");
     } catch (error) {
       console.error("خطأ في إنشاء المنشور:", error);
     }
-    // حفظ المنشور في localStorage (اختياري)
-    localStorage.setItem("post", JSON.stringify({ post }));
   };
+
+  const inputClasses =
+    "peer border-2 w-full p-3 rounded-lg transition-colors focus:outline-none bg-inherit";
+  const ErrorlabelClasses =
+    "absolute text-red-500 left-4 -top-2 text-sm px-1 rounded-sm select-none font-bold cursor-text peer-focus:border-red-500 peer-focus:text-xs peer-focus:-top-2 peer-focus:bg-red-500 peer-focus:text-white peer-placeholder-shown:top-3 peer-placeholder-shown:bg-transparent peer-placeholder-shown:text-red-500 peer-placeholder-shown:text-sm transition-all peer-not-placeholder-shown:bg-red-500 peer-not-placeholder-shown:text-white peer-not-placeholder-shown:text-xs";
+  const labelClasses =
+    "absolute text-slate-900 px-1 -top-2 text-sm left-4 cursor-text select-none rounded-sm peer-focus:bg-blue-500 peer-focus:text-xs peer-focus:-top-2 transition-all peer-focus:text-slate-200 peer-placeholder-shown:top-3 peer-placeholder-shown:bg-transparent peer-placeholder-shown:text-slate-900 peer-placeholder-shown:text-sm peer-not-placeholder-shown:bg-blue-500 peer-not-placeholder-shown:text-slate-200 peer-not-placeholder-shown:text-xs";
+  const buttonClasses =
+    "bg-blue-500 font-bold text-slate-200 w-full p-2 mt-3 rounded-xl hover:bg-blue-600 transition-all cursor-pointer";
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    nextRef: React.RefObject<HTMLInputElement | null>
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      nextRef?.current?.focus();
+    }
+  };
+
+  useEffect(() => {
+    if (titleRef.current) {
+      titleRef.current.focus();
+    }
+  }, []);
 
   return (
     <div className="container mx-auto p-4 flex flex-col gap-4 items-center justify-center bg-slate-200 min-h-screen w-screen">
@@ -109,28 +157,76 @@ export default function CreateAnonymous() {
         dir="rtl"
         onSubmit={handleSubmit}
       >
-        <input
-          type="text"
-          placeholder="عنوان المنشور"
-          onChange={(e) => setTitle(e.target.value)}
-          className="p-2 border rounded"
-          value={title}
-        />
-        <input
-          type="text"
-          placeholder="وصف المنشور"
-          onChange={(e) => setBody(e.target.value)}
-          className="p-2 border rounded"
-          value={body}
-        />
-        {/* حقل رقم الهاتف */}
-        <input
-          type="tel"
-          placeholder="رقم الهاتف"
-          onChange={(e) => setPhone(e.target.value)}
-          className="p-2 border rounded"
-          value={phone}
-        />
+        <div className="relative" dir="ltr">
+          <input
+            type="text"
+            placeholder=""
+            ref={titleRef}
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, bodyRef)}
+            className={`${inputClasses} ${
+              errors.title
+                ? "border-red-500"
+                : title
+                ? "border-blue-500"
+                : "border-black"
+            }`}
+          />
+          {errors.title ? (
+            <label className={ErrorlabelClasses} htmlFor="title">
+              {errors.title}
+            </label>
+          ) : (
+            <label htmlFor="title" className={labelClasses}>
+              عنوان المنشور{" "}
+            </label>
+          )}
+        </div>
+        <div className="relative" dir="ltr">
+          <input
+            type="text"
+            placeholder=""
+            ref={bodyRef}
+            id="body"
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e, phoneRef)}
+            className={`${inputClasses} ${
+              body ? "border-blue-500" : "border-black"
+            }`}
+          />
+          <label htmlFor="body" className={labelClasses}>
+            وصف المنشور
+          </label>
+        </div>
+        <div className="relative" dir="ltr">
+          <input
+            type="tel"
+            placeholder=""
+            ref={phoneRef}
+            id="phone"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className={`${inputClasses} ${
+              errors.phone
+                ? "border-red-500"
+                : phone
+                ? "border-blue-500"
+                : "border-black"
+            }`}
+          />
+          {errors.phone ? (
+            <label className={ErrorlabelClasses} htmlFor="phone">
+              {errors.phone}
+            </label>
+          ) : (
+            <label htmlFor="phone" className={labelClasses}>
+              رقم للتواصل{" "}
+            </label>
+          )}
+        </div>
         {!image && (
           <>
             <input
@@ -242,12 +338,13 @@ export default function CreateAnonymous() {
             </>
           )}
         </div>
-        <Button
+        <button
           type="submit"
-          disabled={!title || !body || phone.replace(/\D/g, "").length < 10}
+          className={buttonClasses}
+          // disabled={!title || !body || phone.replace(/\D/g, "").length < 10}
         >
           إنشاء المنشور
-        </Button>
+        </button>
       </form>
     </div>
   );
