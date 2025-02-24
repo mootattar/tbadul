@@ -11,9 +11,8 @@ export default function Hero() {
           مرحبا بك في <span className="text-blue-300 ">تبادُل</span>
         </p>
         <p className="sm:text-3xl text-xl text-white/70 mt-12">
-          يمكنك تبادل الكتب أو التبرع بها
           <span className="text-red-300">!</span>
-          أو الإبلاغ عن المفقودات
+          يمكنك تبادل الكتب أو التبرع بها أو الإبلاغ عن المفقودات
         </p>
         <p className="sm:text-lg text-white/60 mt-6">
           موقع طلابي يسهّل عليك إيجاد ما تحتاجه أو مشاركة ما لا تحتاجه
