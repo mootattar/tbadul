@@ -79,7 +79,7 @@ export default function CreateAnonymous() {
     e.preventDefault();
     // التحقق من رقم الهاتف: يجب أن يحتوي على 10 أرقام على الأقل
     const digitsOnly = phone.replace(/\D/g, "");
-    let errors = {};
+    let errors: { title: string; phone: string } = { title: "", phone: "" };
     if (title.trim() === "") {
       errors = {
         ...errors,
