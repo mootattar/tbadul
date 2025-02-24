@@ -16,13 +16,13 @@ export default function PostDetails({ id }: { id: string }) {
   useEffect(() => {
     const getUserPhone = async () => {
       const user = auth.currentUser;
-      if (post) {
-        const userDoc = await getDoc(doc(db, "users", user?.uid));
-        setPhone(userDoc.data()?.phone || post?.phone);
+      if (post && user && user.uid && post.uid) {
+        const userDoc = await getDoc(doc(db, "users", post.uid!));
+        setPhone(userDoc.data()?.phone || post.phone);
       }
     };
     getUserPhone();
-  }, []);
+  }, [post]);
 
   if (!post) {
     return <h1>post is not exist</h1>;
