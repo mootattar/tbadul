@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { ImageUp } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
@@ -92,7 +91,7 @@ export default function CreateAnonymous() {
         phone: "يجب ان يكون رقم الهاتف مكون من 10 ارقام",
       };
     }
-    if (Object.keys(errors).length > 0) {
+    if (errors.title || errors.phone) {
       setErrors(errors);
       return;
     }
@@ -284,7 +283,42 @@ export default function CreateAnonymous() {
             </div>
           )}
         </div>
-        <div className="flex flex-wrap gap-4">
+        <div className="flex sm:flex-row flex-col gap-4">
+          <label className="relative flex items-center cursor-pointer">
+            <input
+              className="sr-only peer"
+              name="futuristic-radio"
+              type="radio"
+              checked={choice === "lost"}
+              onChange={() => handleChoiceChange("lost")}
+            />
+            <div className="w-6 h-6 bg-transparent border-2 border-red-500 rounded-full peer-checked:bg-red-500 peer-checked:border-red-500 peer-hover:shadow-lg peer-hover:shadow-red-500/50 peer-checked:shadow-lg peer-checked:shadow-red-500/50 transition duration-300 ease-in-out"></div>
+            <span className="mx-2 text-black/90">مفقودات</span>
+          </label>
+          <label className="relative flex items-center cursor-pointer">
+            <input
+              className="sr-only peer"
+              name="futuristic-radio"
+              type="radio"
+              checked={choice === "exchange"}
+              onChange={() => handleChoiceChange("exchange")}
+            />
+            <div className="w-6 h-6 bg-transparent border-2 border-yellow-500 rounded-full peer-checked:bg-yellow-500 peer-checked:border-yellow-500 peer-hover:shadow-lg peer-hover:shadow-yellow-500/50 peer-checked:shadow-lg peer-checked:shadow-yellow-500/50 transition duration-300 ease-in-out"></div>
+            <span className="mx-2 text-black/70">تبادل</span>
+          </label>
+          <label className="relative flex items-center cursor-pointer">
+            <input
+              className="sr-only peer"
+              name="futuristic-radio"
+              type="radio"
+              checked={choice === "donation"}
+              onChange={() => handleChoiceChange("donation")}
+            />
+            <div className="w-6 h-6 bg-transparent border-2 border-blue-500 rounded-full peer-checked:bg-blue-500 peer-checked:border-blue-500 peer-hover:shadow-lg peer-hover:shadow-blue-500/50 peer-checked:shadow-lg peer-checked:shadow-blue-500/50 transition duration-300 ease-in-out"></div>
+            <span className="mx-2 text-black/70">تبرع</span>
+          </label>
+        </div>
+        {/* <div className="flex flex-wrap gap-4">
           <Button
             type="button"
             onClick={() => handleChoiceChange("exchange")}
@@ -337,7 +371,7 @@ export default function CreateAnonymous() {
               </label>
             </>
           )}
-        </div>
+        </div> */}
         <button
           type="submit"
           className={buttonClasses}
