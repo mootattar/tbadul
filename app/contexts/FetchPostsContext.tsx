@@ -25,11 +25,11 @@ interface PostContextType {
   posts: Post[];
   refreshPosts: () => void;
 }
-export const PostContext = createContext<PostContextType>({
+export const FetchPostContext = createContext<PostContextType>({
   posts: [],
   refreshPosts: () => {},
 });
-export default function PostProvider({
+export default function FetchPostsProvider({
   children,
 }: {
   children: React.ReactNode;
@@ -61,14 +61,14 @@ export default function PostProvider({
   };
 
   return (
-    <PostContext.Provider value={{ posts, refreshPosts }}>
+    <FetchPostContext.Provider value={{ posts, refreshPosts }}>
       {children}
-    </PostContext.Provider>
+    </FetchPostContext.Provider>
   );
 }
 
 // Custom hook لإعادة جلب البيانات عند الاستدعاء
 export function useRefreshPosts() {
-  const { refreshPosts } = useContext(PostContext);
+  const { refreshPosts } = useContext(FetchPostContext);
   return refreshPosts;
 }

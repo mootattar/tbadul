@@ -39,20 +39,24 @@ export default function MyPosts() {
   // دالة التأكيد لتعديل المنشور
   const handleEditConfirm = async (
     newTitle: string,
-    newDescription: string
+    newBody: string,
+    newImage?: string,
+    newSecondImage?: string
   ) => {
     if (!selectedPost) return;
     try {
       await updateDoc(doc(db, "posts", selectedPost.id), {
         title: newTitle,
-        description: newDescription, // تعديل الوصف بدلاً من `body`
+        body: newBody,
+        image: newImage,
+        secondImage: newSecondImage,
       });
 
       // تحديث البيانات في الواجهة بدون إعادة تحميل الصفحة
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === selectedPost.id
-            ? { ...post, title: newTitle, description: newDescription }
+            ? { ...post, title: newTitle, body: newBody }
             : post
         )
       );
@@ -144,7 +148,7 @@ export default function MyPosts() {
               />
               <div className="p-4">
                 <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-                <p className="text-gray-700 mb-4">{post.description}</p>
+                <p className="text-gray-700 mb-4">{post.body}</p>
                 <div className="flex justify-between">
                   <button
                     onClick={() => openEditDialog(post)}
@@ -169,7 +173,9 @@ export default function MyPosts() {
       {showEditDialog && selectedPost && (
         <EditDialog
           initialTitle={selectedPost.title}
-          initialDescription={selectedPost.description}
+          initialBody={selectedPost.body}
+          initialImage={selectedPost.image}
+          initialSecondImage={selectedPost.secondImage}
           onConfirm={handleEditConfirm}
           onCancel={() => setShowEditDialog(false)}
         />

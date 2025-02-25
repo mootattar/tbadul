@@ -230,7 +230,7 @@ export default function Header() {
                   <Button variant="outline">تسجيل الدخول</Button>
                 </Link>
                 <Link href={"/signup"} prefetch={false}>
-                  <Button>إنشاء حساب</Button>
+                  <Button className="border-2 border-white">إنشاء حساب</Button>
                 </Link>
               </div>
             )
@@ -240,7 +240,7 @@ export default function Header() {
                 <Button variant="outline">تسجيل الدخول</Button>
               </Link>
               <Link href={"/signup"} prefetch={false}>
-                <Button>إنشاء حساب</Button>
+                <Button className="border-2 border-white">إنشاء حساب</Button>
               </Link>
             </div>
           )}

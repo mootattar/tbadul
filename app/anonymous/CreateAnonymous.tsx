@@ -3,11 +3,15 @@ import { ImageUp } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { loginAnonymously } from "../functions/signIn";
-import { db } from "@/lib/firebase";
-import { addDoc, collection } from "firebase/firestore";
 import { useToast } from "../hooks/useToast";
+import { usePostActions } from "../hooks/usePostActions";
+import { useRouter } from "next/navigation";
 
 export default function CreateAnonymous() {
+  // custom hooks
+  const { createPost, uploadImage } = usePostActions();
+  // redirect
+  const router = useRouter();
   // refs
   const titleRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLInputElement>(null);
@@ -22,51 +26,27 @@ export default function CreateAnonymous() {
   const [errors, setErrors] = useState({
     title: "",
     phone: "",
+    uploading: "",
   });
   const [image, setImage] = useState("");
   const [secondImage, setSecondImage] = useState("");
-  const { handleShow } = useToast();
   const [uploading, setUploading] = useState(false);
-
+  const { handleShow } = useToast();
   const handleAddImage = async (
     e: React.ChangeEvent<HTMLInputElement>,
     second: boolean
   ) => {
+    setUploading(true);
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const data = new FormData();
-    data.append("file", file);
-    data.append(
-      "upload_preset",
-      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD ?? ""
-    );
-    setUploading(true);
-    try {
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_URL}/image/upload`,
-        {
-          method: "POST",
-          body: data,
-        }
-      );
-      if (!res.ok) {
-        throw new Error("فشل رفع الصورة");
-      }
-      const uploadedImage = await res.json();
-      if (second) {
-        setSecondImage(uploadedImage.secure_url);
-      } else {
-        setImage(uploadedImage.secure_url);
-      }
-    } catch (error) {
-      console.error("حدث خطأ أثناء رفع الصورة:", error);
-    } finally {
-      setUploading(false);
+    const url = await uploadImage(file);
+    if (second) {
+      setSecondImage(url);
+      return setUploading(false);
     }
+    setImage(url);
+    return setUploading(false);
   };
-
-  // تحديث الخيار مع إزالة الصورة الثانية إذا لم يكن الخيار "exchange"
   const handleChoiceChange = (newChoice: "exchange" | "lost" | "donation") => {
     setChoice(newChoice);
     if (newChoice !== "exchange") {
@@ -76,9 +56,12 @@ export default function CreateAnonymous() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // التحقق من رقم الهاتف: يجب أن يحتوي على 10 أرقام على الأقل
     const digitsOnly = phone.replace(/\D/g, "");
-    let errors: { title: string; phone: string } = { title: "", phone: "" };
+    let errors: { title: string; phone: string; uploading: string } = {
+      title: "",
+      phone: "",
+      uploading: "",
+    };
     if (title.trim() === "") {
       errors = {
         ...errors,
@@ -91,24 +74,32 @@ export default function CreateAnonymous() {
         phone: "يجب ان يكون رقم الهاتف مكون من 10 ارقام",
       };
     }
-    if (errors.title || errors.phone) {
+    if (uploading) {
+      console.log("hello wolrd");
+      errors = {
+        ...errors,
+        uploading: "الرجاء الإنتظار ريثما يتم تحميل الصورة...",
+      };
+    }
+    if (errors.title || errors.phone || errors.uploading) {
       setErrors(errors);
+      if (errors.phone) phoneRef.current?.focus();
+      if (errors.title) titleRef.current?.focus();
       return;
     }
     const user = await loginAnonymously();
     const post = {
-      image: image || null,
-      secondImage: secondImage || null,
+      image: image || "",
+      secondImage: secondImage || "",
       title,
       body,
       phone,
-      uid: user ? user.uid : null,
+      uid: user ? user.uid : "",
       choice,
       createdAt: new Date(),
     };
     try {
-      // إضافة المنشور إلى مجموعة "posts" في Firestore
-      await addDoc(collection(db, "posts"), post);
+      createPost(post);
       setTitle("");
       setBody("");
       setImage("");
@@ -116,6 +107,7 @@ export default function CreateAnonymous() {
       setChoice("donation");
       setPhone("");
       handleShow("تم انشاء المنشور بنجاح");
+      router.push("/");
     } catch (error) {
       console.error("خطأ في إنشاء المنشور:", error);
     }
@@ -145,7 +137,6 @@ export default function CreateAnonymous() {
       titleRef.current.focus();
     }
   }, []);
-
   return (
     <div className="container mx-auto p-4 flex flex-col gap-4 items-center justify-center bg-slate-200 min-h-screen w-screen">
       <h1 className="text-2xl font-bold text-slate-900">
@@ -242,7 +233,11 @@ export default function CreateAnonymous() {
             </label>
           </>
         )}
-        {uploading && <p>جاري رفع الصورة...</p>}
+        {uploading && errors.uploading ? (
+          <p>{errors.uploading}</p>
+        ) : (
+          uploading && <p>جاري رفع الصورة...</p>
+        )}
         <div className="flex gap-8">
           {image && (
             <div className="relative">
@@ -318,65 +313,7 @@ export default function CreateAnonymous() {
             <span className="mx-2 text-black/70">تبرع</span>
           </label>
         </div>
-        {/* <div className="flex flex-wrap gap-4">
-          <Button
-            type="button"
-            onClick={() => handleChoiceChange("exchange")}
-            className={`${
-              choice === "exchange"
-                ? "bg-slate-400 text-black hover:bg-slate-400 hover:text-black"
-                : ""
-            }`}
-          >
-            تبادل
-          </Button>
-          <Button
-            type="button"
-            onClick={() => handleChoiceChange("donation")}
-            className={`${
-              choice === "donation"
-                ? "bg-slate-400 text-black hover:bg-slate-400 hover:text-black"
-                : ""
-            }`}
-          >
-            تبرع
-          </Button>
-          <Button
-            type="button"
-            onClick={() => handleChoiceChange("lost")}
-            className={`${
-              choice === "lost"
-                ? "bg-slate-400 text-black hover:bg-slate-400 hover:text-black"
-                : ""
-            }`}
-          >
-            مفقودات
-          </Button>
-          {choice === "exchange" && !secondImage && (
-            <>
-              <input
-                id="file-upload-second"
-                type="file"
-                onChange={(e) => handleAddImage(e, true)}
-                style={{ display: "none" }}
-              />
-              <label
-                htmlFor="file-upload-second"
-                className="cursor-pointer p-1"
-              >
-                <div className="flex items-center gap-2">
-                  <ImageUp size={32} />
-                  <p className="text-sm">رفع الصورة الأخرى إختياري</p>
-                </div>
-              </label>
-            </>
-          )}
-        </div> */}
-        <button
-          type="submit"
-          className={buttonClasses}
-          // disabled={!title || !body || phone.replace(/\D/g, "").length < 10}
-        >
+        <button type="submit" className={buttonClasses}>
           إنشاء المنشور
         </button>
       </form>

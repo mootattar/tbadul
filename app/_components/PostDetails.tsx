@@ -3,14 +3,14 @@ import { User } from "lucide-react";
 import Image from "next/image";
 import React, { useContext, useEffect, useState } from "react";
 import avatar from "../assets/avatar.png";
-import { Post, PostContext } from "../contexts/PostContext";
+import { Post, FetchPostContext } from "../contexts/FetchPostsContext";
 import noImage from "../assets/noImage.jpg";
 import Link from "next/link";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export default function PostDetails({ id }: { id: string }) {
-  const { posts } = useContext(PostContext);
+  const { posts } = useContext(FetchPostContext);
   const post = posts?.find((p: Post) => p.id === id);
   const [phone, setPhone] = useState("");
   useEffect(() => {

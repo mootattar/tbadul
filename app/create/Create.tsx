@@ -2,13 +2,13 @@
 import { ImageUp } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import { db } from "@/lib/firebase";
-import { addDoc, collection } from "firebase/firestore";
 import { useAuth } from "../contexts/AuthContexts";
 import { useRouter } from "next/navigation";
 import { useToast } from "../hooks/useToast";
+import { usePostActions } from "../hooks/usePostActions";
 
 export default function CreatePost() {
+  const { createPost, uploadImage } = usePostActions();
   const titleRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLInputElement>(null);
   const { handleShow } = useToast();
@@ -26,10 +26,13 @@ export default function CreatePost() {
   );
   const { currentUser } = useAuth();
   const [title, setTitle] = useState("");
-  const [error, setError] = useState("");
   const [body, setBody] = useState("");
   const [image, setImage] = useState("");
   const [secondImage, setSecondImage] = useState("");
+  const [errors, setErrors] = useState({
+    title: "",
+    uploading: "",
+  });
   const [uploading, setUploading] = useState(false);
   const router = useRouter();
   const handleKeyDown = (
@@ -47,45 +50,27 @@ export default function CreatePost() {
       titleRef.current.focus();
     }
   }, []);
-
   const handleAddImage = async (
     e: React.ChangeEvent<HTMLInputElement>,
     second: boolean
   ) => {
+    setUploading(true);
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const data = new FormData();
-    data.append("file", file);
-    data.append(
-      "upload_preset",
-      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD ?? ""
-    );
-    setUploading(true);
-    try {
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_URL}/image/upload`,
-        {
-          method: "POST",
-          body: data,
-        }
-      );
-      if (!res.ok) {
-        throw new Error("فشل رفع الصورة");
-      }
-      const uploadedImage = await res.json();
+    const url = await uploadImage(file);
+    if (url) {
       if (second) {
-        setSecondImage(uploadedImage.secure_url);
+        setSecondImage(url);
+        return setUploading(false);
       } else {
-        setImage(uploadedImage.secure_url);
+        setImage(url);
+        return setUploading(false);
       }
-    } catch (error) {
-      console.error("حدث خطأ أثناء رفع الصورة:", error);
-    } finally {
-      setUploading(false);
+    } else {
+      setErrors({ ...errors, uploading: "حدث خطأ أثناء رفع الصورة" });
     }
   };
-
   const handleChoiceChange = (newChoice: "exchange" | "lost" | "donation") => {
     setChoice(newChoice);
     if (newChoice !== "exchange") {
@@ -95,21 +80,39 @@ export default function CreatePost() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    let errors: { title: string; uploading: string } = {
+      title: "",
+      uploading: "",
+    };
     if (title.trim() === "") {
-      return setError("يجب عليك إدخال عنوان للمنشور");
+      errors = {
+        ...errors,
+        title: "يرجى كتابة عنوان المنشور",
+      };
+    }
+    if (uploading) {
+      errors = {
+        ...errors,
+        uploading: "الرجاء الإنتظار ريثما يتم تحميل الصورة...",
+      };
+    }
+    if (errors.title || errors.uploading) {
+      setErrors(errors);
+      titleRef.current?.focus();
+      return;
     }
     const post = {
-      image: image || null,
-      secondImage: secondImage || null,
+      image: image || "",
+      secondImage: secondImage || "",
       title,
       body,
-      uid: currentUser?.uid,
+      uid: currentUser?.uid || "",
       choice,
       auth: currentUser?.isAnonymous ? "مجهول" : currentUser?.displayName,
       createdAt: new Date(),
     };
     try {
-      await addDoc(collection(db, "posts"), post);
+      await createPost(post);
       setTitle("");
       setBody("");
       setImage("");
@@ -140,16 +143,16 @@ export default function CreatePost() {
             onChange={(e) => setTitle(e.target.value)}
             onKeyDown={(e) => handleKeyDown(e, bodyRef)}
             className={`${inputClasses} ${
-              error
+              errors.title
                 ? "border-red-500"
                 : title
                 ? "border-blue-500"
                 : "border-black"
             }`}
           />
-          {error ? (
+          {errors.title ? (
             <label className={ErrorlabelClasses} htmlFor="title">
-              {error}
+              {errors.title}
             </label>
           ) : (
             <label htmlFor="title" className={labelClasses}>
@@ -190,17 +193,21 @@ export default function CreatePost() {
             </label>
           </>
         )}
-        {uploading && <p>جاري رفع الصورة...</p>}
+        {uploading && errors.uploading ? (
+          <p>{errors.uploading}</p>
+        ) : (
+          uploading && <p>جاري رفع الصورة...</p>
+        )}
         <div className="flex gap-8">
           {image && (
             <div className="relative">
               <Image
+                loading="lazy"
                 src={image}
                 width={64}
                 height={64}
                 alt="الصورة الرئيسية"
                 className="w-[64px] h-[64px]"
-                loading="lazy"
               />
               <button
                 type="button"

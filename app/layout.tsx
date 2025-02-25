@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "./_components/Header";
 import Footer from "./_components/Footer";
-import PostProvider from "./contexts/PostContext";
 import { AuthProvider } from "./contexts/AuthContexts";
 import { ToastProvider } from "./contexts/ToastContext";
+import FetchPostsProvider from "./contexts/FetchPostsContext";
 
 export const metadata: Metadata = {
   title: "tbadul",
@@ -21,13 +21,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`antialiased`}>
         <AuthProvider>
-          <PostProvider>
+          <FetchPostsProvider>
             <ToastProvider>
               <Header />
               {children}
               <Footer />
             </ToastProvider>
-          </PostProvider>
+          </FetchPostsProvider>
         </AuthProvider>
       </body>
     </html>
