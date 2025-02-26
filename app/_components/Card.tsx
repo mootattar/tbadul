@@ -1,10 +1,16 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import noImage from "../assets/noImage.jpg";
 import { useAuth } from "../contexts/AuthContexts";
-import { doc, deleteDoc, updateDoc, collection } from "firebase/firestore";
+import {
+  doc,
+  deleteDoc,
+  updateDoc,
+  collection,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { EditDialog, ConfirmDeleteDialog } from "./Dialog";
 
@@ -25,6 +31,16 @@ export default function Card(props: { href: string; post: Post }) {
   const { href, post } = props;
   const { currentUser } = useAuth();
 
+  const [phone, setPhone] = useState("");
+  useEffect(() => {
+    const getUserPhone = async () => {
+      if (post && post.uid) {
+        const userDoc = await getDoc(doc(db, "users", post.uid!));
+        setPhone(userDoc.data()?.phone || post.phone);
+      }
+    };
+    getUserPhone();
+  }, [post]);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -119,7 +135,8 @@ export default function Card(props: { href: string; post: Post }) {
                 رؤية المزيد
               </Link>
               <Link
-                href={`post/${href}`}
+                href={`https://wa.me/+962${phone?.slice(1)}`}
+                target="_blank"
                 className="bg-white hover:bg-black/10 border-2 text-black font-bold py-1 px-3 rounded-lg flex gap-2 transition-all"
               >
                 التواصل مع الناشر{" "}

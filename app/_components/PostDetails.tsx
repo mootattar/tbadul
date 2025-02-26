@@ -98,6 +98,7 @@ export default function PostDetails({ id }: { id: string }) {
                     </g>
                   </g>
                 </svg>{" "}
+                href
               </Link>
             </div>
           </div>
