@@ -1,18 +1,29 @@
 import { db } from "@/lib/firebase";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+
+interface Post {
+  id: string;
+  title: string;
+  body: string;
+  image?: string;
+  secondImage?: string;
+  uid: string;
+  phone?: string;
+  choice: string;
+  createdAt: Date;
+}
+interface UpdatePost {
+  id: string;
+  title: string;
+  body?: string;
+  image?: string;
+  secondImage?: string;
+  newChoice?: string;
+}
 
 export const usePostActions = () => {
   // إنشاء منشور
-  const createPost = async (post: {
-    title: string;
-    body: string;
-    image?: string;
-    secondImage?: string;
-    uid: string;
-    phone?: string;
-    choice: string;
-    createdAt: Date;
-  }) => {
+  const createPost = async (post: Post) => {
     try {
       // هنا يتم إرسال البيانات إلى API أو تخزينها في قاعدة البيانات
       await addDoc(collection(db, "posts"), post);
@@ -22,29 +33,20 @@ export const usePostActions = () => {
     }
   };
 
-  // تعديل منشور
-  const updatePost = async (
-    id: string,
-    title: string,
-    body: string,
-    image?: string,
-    secondImage?: string
-  ) => {
+  const updatePost = async (post: UpdatePost) => {
     try {
-      // إرسال تحديث المنشور إلى API
-      console.log("✏️ تعديل منشور:", {
-        id,
-        title,
-        body,
-        image,
-        secondImage,
+      await updateDoc(doc(collection(db, "posts"), post.id), {
+        title: post.title,
+        body: post.body,
+        image: post.image,
+        secondImage: post.secondImage,
+        choice: post.newChoice,
       });
     } catch (error) {
-      console.error("❌ خطأ أثناء تعديل المنشور:", error);
+      console.error("خطأ في تعديل المنشور:", error);
     }
   };
 
-  // رفع الصورة إلى Cloudinary أو أي API آخر
   const uploadImage = async (file: File) => {
     const data = new FormData();
     if (!file) return;

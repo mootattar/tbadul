@@ -15,6 +15,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { EditDialog, ConfirmDeleteDialog } from "../_components/Dialog";
+import Loading from "../Loading";
 
 export default function MyPosts() {
   const { currentUser } = useAuth();
@@ -36,7 +37,6 @@ export default function MyPosts() {
     setShowDeleteDialog(true);
   };
 
-  // دالة التأكيد لتعديل المنشور
   const handleEditConfirm = async (
     newTitle: string,
     newBody: string,
@@ -52,7 +52,6 @@ export default function MyPosts() {
         secondImage: newSecondImage,
       });
 
-      // تحديث البيانات في الواجهة بدون إعادة تحميل الصفحة
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === selectedPost.id
@@ -68,13 +67,10 @@ export default function MyPosts() {
     }
   };
 
-  // دالة التأكيد لحذف المنشور
   const handleDeleteConfirm = async () => {
     if (!selectedPost) return;
     try {
       await deleteDoc(doc(db, "posts", selectedPost.id));
-
-      // تحديث الحالة لإزالة المنشور المحذوف
       setPosts((prevPosts) =>
         prevPosts.filter((post) => post.id !== selectedPost.id)
       );
@@ -86,31 +82,28 @@ export default function MyPosts() {
     }
   };
 
-  // دالة لجلب المنشورات الخاصة بالمستخدم الحالي
-  const fetchPosts = async () => {
-    if (!currentUser) return;
-    setLoading(true);
-    try {
-      const q = query(
-        collection(db, "posts"),
-        where("uid", "==", currentUser.uid)
-      );
-      const querySnapshot = await getDocs(q);
-      const fetchedPosts = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setPosts(fetchedPosts);
-    } catch (error) {
-      console.error("خطأ في جلب المنشورات:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchPosts = async () => {
+      if (!currentUser) return;
+      setLoading(true);
+      try {
+        const q = query(
+          collection(db, "posts"),
+          where("uid", "==", currentUser.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const fetchedPosts = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setPosts(fetchedPosts);
+      } catch (error) {
+        console.error("خطأ في جلب المنشورات:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchPosts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
   return (
@@ -119,16 +112,10 @@ export default function MyPosts() {
         <h1 className="text-white text-3xl font-bold text-center w-full">
           منشوراتي
         </h1>
-        <button
-          onClick={fetchPosts}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-        >
-          تحديث
-        </button>
       </header>
 
       {loading && currentUser ? (
-        <p className="text-center text-gray-600">جارٍ تحميل المنشورات...</p>
+        <Loading />
       ) : posts.length === 0 ? (
         <p className="text-center text-gray-600">لا توجد منشورات حتى الآن.</p>
       ) : (
@@ -144,7 +131,7 @@ export default function MyPosts() {
                 width={500}
                 height={300}
                 loading="lazy"
-                className="w-full h-48 object-cover"
+                className="w-full h-[400px] object-contain"
               />
               <div className="p-4">
                 <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
@@ -168,8 +155,6 @@ export default function MyPosts() {
           ))}
         </div>
       )}
-
-      {/* حوار تعديل المنشور */}
       {showEditDialog && selectedPost && (
         <EditDialog
           initialTitle={selectedPost.title}
@@ -181,7 +166,6 @@ export default function MyPosts() {
         />
       )}
 
-      {/* حوار تأكيد الحذف */}
       {showDeleteDialog && selectedPost && (
         <ConfirmDeleteDialog
           message="هل أنت متأكد من حذف المنشور؟"

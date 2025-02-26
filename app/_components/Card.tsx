@@ -95,7 +95,7 @@ export default function Card(props: { href: string; post: Post }) {
           loading="lazy"
           width={500}
           height={500}
-          className="object-cover w-full h-[400px]"
+          className="object-contain bg-gray-300 w-full h-[400px]"
         />
       ) : (
         <Image
@@ -110,7 +110,7 @@ export default function Card(props: { href: string; post: Post }) {
       <div className="p-4 relative">
         <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
         <p className="text-gray-700 mb-4">{post.body}</p>
-        <div className="flex justify-between">
+        <div className="flex justify-between max-sm:flex-col">
           {currentUser?.uid === post.uid ? (
             <>
               <button
@@ -127,10 +127,10 @@ export default function Card(props: { href: string; post: Post }) {
               </button>
             </>
           ) : (
-            <div className="flex justify-between w-full max-sm:flex-col text-center">
+            <>
               <Link
                 href={`post/${href}`}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded"
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded text-center"
               >
                 رؤية المزيد
               </Link>
@@ -184,7 +184,7 @@ export default function Card(props: { href: string; post: Post }) {
                   </g>
                 </svg>
               </Link>
-            </div>
+            </>
           )}
         </div>
       </div>
