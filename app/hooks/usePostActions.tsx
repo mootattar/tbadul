@@ -2,7 +2,6 @@ import { db } from "@/lib/firebase";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 
 interface Post {
-  id: string;
   title: string;
   body: string;
   image?: string;
