@@ -26,7 +26,6 @@ export const usePostActions = () => {
     try {
       // هنا يتم إرسال البيانات إلى API أو تخزينها في قاعدة البيانات
       await addDoc(collection(db, "posts"), post);
-      console.log("📝 تم إنشاء المنشور:", post);
     } catch (error) {
       console.error("❌ خطأ أثناء إنشاء المنشور:", error);
     }

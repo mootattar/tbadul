@@ -22,6 +22,7 @@ interface Post {
   secondImage?: string;
   phone?: string;
   uid?: string;
+  price?: string;
   choice?: string;
   auth?: string;
   createdAt?: Date;
@@ -110,7 +111,10 @@ export default function Card(props: { href: string; post: Post }) {
       <div className="p-4 relative">
         <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
         <p className="text-gray-700 mb-4">{post.body}</p>
-        <div className="flex justify-between max-sm:flex-col">
+        {post?.choice === "sale" && (
+          <p className="text-black font-bold mb-4">{post.price} دينار</p>
+        )}
+        <div className="flex justify-between max-sm:flex-col max-sm:gap-2">
           {currentUser?.uid === post.uid ? (
             <>
               <button
@@ -209,16 +213,20 @@ export default function Card(props: { href: string; post: Post }) {
       <p
         className={`absolute top-1 right-2 text-white px-3 py-1 rounded-md text-xs font-bold scale-75 ${
           post?.choice === "exchange"
-            ? "bg-green-500"
+            ? "bg-yellow-500"
             : post?.choice === "lost"
             ? "bg-red-500"
-            : "bg-blue-500"
+            : post?.choice === "sale"
+            ? "bg-blue-500"
+            : "bg-green-500"
         }`}
       >
         {post?.choice === "exchange"
           ? "للتبادل"
           : post?.choice === "lost"
           ? "مفقودات"
+          : post?.choice === "sale"
+          ? "للبيع"
           : "للتبرع"}
       </p>
     </div>

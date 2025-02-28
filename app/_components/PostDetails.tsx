@@ -24,7 +24,7 @@ export default function PostDetails({ id }: { id: string }) {
   }, [post]);
 
   if (!post) {
-    return <h1>post is not exist</h1>;
+    return <h1>المنشور غير موجود!</h1>;
   }
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -98,7 +98,6 @@ export default function PostDetails({ id }: { id: string }) {
                     </g>
                   </g>
                 </svg>{" "}
-                href
               </Link>
             </div>
           </div>
