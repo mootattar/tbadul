@@ -71,7 +71,7 @@ export default function Login() {
         <div className="relative" dir="ltr">
           <input
             type="text"
-            placeholder=""
+            placeholder=" "
             ref={emailRef}
             id="email"
             value={data.email}

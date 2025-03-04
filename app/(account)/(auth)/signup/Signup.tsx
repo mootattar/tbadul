@@ -127,7 +127,7 @@ export default function Signup() {
         <div className="relative">
           <input
             type="text"
-            placeholder=""
+            placeholder=" "
             ref={nameRef}
             id="name"
             value={data.name}
@@ -158,7 +158,7 @@ export default function Signup() {
         <div className="relative">
           <input
             type="text"
-            placeholder=""
+            placeholder=" "
             ref={emailRef}
             id="email"
             value={data.email}
@@ -189,7 +189,7 @@ export default function Signup() {
         <div className="relative">
           <input
             type="tel"
-            placeholder=""
+            placeholder=" "
             ref={telRef}
             id="phone"
             value={data.phone}
@@ -251,7 +251,7 @@ export default function Signup() {
         <div className="relative">
           <input
             type="password"
-            placeholder=""
+            placeholder=" "
             ref={confirmPasswordRef}
             id="confirmPassword"
             value={data.confirmPassword}
