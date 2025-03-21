@@ -12,6 +12,11 @@ export default function SEO() {
         content="هذا الموقع يهدف إلى تسهيل عمليات التبادل والتبرع والمساعدة بين المستخدمين. اكتشف خدماتنا وتمتع بتجربة مميزة."
       />
 
+      <meta
+        name="google-site-verification"
+        content="mWyngtNR-ZvTSI67dm5KqFVRWiEboa4vAoKPxT0bcqI"
+      />
+
       {/* الكلمات المفتاحية */}
       <meta
         name="keywords"

@@ -20,6 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`antialiased`}>
+        <meta
+          name="google-site-verification"
+          content="mWyngtNR-ZvTSI67dm5KqFVRWiEboa4vAoKPxT0bcqI"
+        />
         <AuthProvider>
           <FetchPostsProvider>
             <ToastProvider>
