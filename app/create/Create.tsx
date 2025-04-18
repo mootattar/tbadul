@@ -123,7 +123,8 @@ export default function CreatePost() {
       choice,
       auth: currentUser?.isAnonymous ? "مجهول" : currentUser?.displayName,
       // إذا كان الخيار "للبيع" يتم إضافة السعر كرقم
-      price: choice === "sale" ? parseFloat(price) : undefined,
+      price:
+        choice === "sale" && price !== undefined ? parseFloat(price) : null,
       createdAt: new Date(),
     };
     try {

@@ -112,7 +112,8 @@ export default function CreateAnonymous() {
       title,
       body,
       phone,
-      price: choice === "sale" ? parseFloat(price) : undefined,
+      price:
+        choice === "sale" && price !== undefined ? parseFloat(price) : null,
       uid: user ? user.uid : "",
       choice,
       createdAt: new Date(),

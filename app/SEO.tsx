@@ -12,6 +12,8 @@ export default function SEO() {
         content="هذا الموقع يهدف إلى تسهيل عمليات التبادل والتبرع والمساعدة بين المستخدمين. اكتشف خدماتنا وتمتع بتجربة مميزة."
       />
 
+      <meta name="robots" content="index, follow" />
+
       <meta
         name="google-site-verification"
         content="mWyngtNR-ZvTSI67dm5KqFVRWiEboa4vAoKPxT0bcqI"
@@ -20,7 +22,7 @@ export default function SEO() {
       {/* الكلمات المفتاحية */}
       <meta
         name="keywords"
-        content="تبادل, تبرع, مساعدات, خدمات, مجتمع, كتب, فئة"
+        content="تبادل , تبرع , بيع , إبﻻغ عن مفقودات , تبادل الكتب , تبرع بالكتب , بيع الكتب , جامعة اليرموك , كتب جامعة اليرموك , تبادل الكتب في جاعة اليرموك , التبادل الطﻻبي ,حملة تبادل الكتب,منصة تبادل , موقع تبادل , "
       />
 
       {/* بيانات صاحب الموقع */}
@@ -34,7 +36,7 @@ export default function SEO() {
         property="og:description"
         content="هذا الموقع يهدف إلى تسهيل عمليات التبادل والتبرع والمساعدة بين المستخدمين. اكتشف خدماتنا وتمتع بتجربة مميزة."
       />
-      <meta property="og:image" content="/path/to/your-image.jpg" />
+      <meta property="og:image" content="./favicon.ico" />
       <meta property="og:url" content="https://tbadul.vercel.app" />
       <meta property="og:type" content="website" />
 
